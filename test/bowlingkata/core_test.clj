@@ -5,3 +5,7 @@
 (deftest ten-nines
   (testing "Ten nines should equal 90"
     (is (= (score [9 0 9 0 9 0 9 0 9 0 9 0 9 0 9 0 9 0 9 0]) 90))))
+
+(deftest eleven-fives
+  (testing "Ten spares (5/5) and a final 5 = 150"
+    (is (= (score [5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5]) 150))))
