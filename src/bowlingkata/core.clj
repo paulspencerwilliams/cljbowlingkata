@@ -9,12 +9,6 @@
     (spare? next) :spare
     :else :normal))
 
-(defn turn-score [first second third]
-  (cond
-    (strike? first) (+ first second third)
-    (spare? second) (+ 10 third)
-    :else (+ first second)))
-
 (defn roll-score [roll]
   (case roll
     \X 10
@@ -28,20 +22,16 @@
          acc 0
          turn 0]
     (if (< turn 10)
-      (if
-        (= (turn-type head next) :strike)
-        (recur
-          (conj tail next after-next)
-          (+ acc (+ 10 (roll-score next) (roll-score after-next)))
-          (inc turn))
-        (recur
-          (conj tail after-next)
-          (+ acc
-             (if (= (turn-type head next) :spare)
-               (+ 10 (roll-score after-next))
-               (+ (roll-score head) (roll-score next))))
-          (inc turn)))
-      acc))
-  )
+      (let [turn-type (turn-type head next)
+            current-score (case turn-type
+                            :strike (+ acc (+ 10 (roll-score next) (roll-score after-next)))
+                            :spare (+ acc 10 (roll-score after-next))
+                            :normal (+ acc (roll-score head) (roll-score next)))
+            new-tail (case turn-type
+                       :strike (conj tail next after-next)
+                       :spare (conj tail after-next)
+                       :normal (conj tail after-next))]
+        (recur new-tail current-score (inc turn)))
+      acc)))
 
 
