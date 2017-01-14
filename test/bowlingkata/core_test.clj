@@ -2,14 +2,28 @@
   (:require [clojure.test :refer :all]
             [bowlingkata.core :refer :all]))
 
-(deftest ten-nines
-  (testing "Ten nines should equal 90"
-    (is (= (score "9-9-9-9-9-9-9-9-9-9-") 90))))
+(deftest bowling
+  (testing "strikes for all rolls"
+    (is (= 300 (score "XXXXXXXXXXXX"))))
 
-(deftest eleven-fives
-  (testing "Ten spares (5/5) and a final 5 = 150"
-    (is (= (score "5/5/5/5/5/5/5/5/5/5/5") 150))))
+  (testing "normal scores"
+    (is (= 99 (score "91919393929291219191"))))
 
-(deftest twelve-strikes
-  (testing "12 strikes = 300"
-    (is (= (score "XXXXXXXXXXXX")))))
+  (testing "normal scores or misses"
+    (is (= 90 (score "9-9-9-9-9-9-9-9-9-9-")))
+    (is (= 93 (score "919-9-9-9-9-929-9-9-"))))
+
+  (testing "mixture of stikes and normals"
+    (is (= 98 (score "9-X8-9-9-9-9-9-9-9-")))
+    (is (= 104 (score "9-X8-9-9-9-9-9-9-X23")))
+    (is (= 28 (score "--X81--------------")))
+    (is (= 27 (score "--X8-1-------------"))))
+
+  (testing "spares for all rolls"
+    (is (= 150 (score "5/5/5/5/5/5/5/5/5/5/5"))))
+
+  (testing "mixture of spares and normals"
+    (is (= 82 (score "9-8/--9-9-9-9-9-9-9-")))
+    (is (= 84 (score "9-8/--9-9-9-9-9-9-9/1")))
+    (is (= 12 (score "--8/1---------------")))
+    (is (= 11 (score "--8/-1--------------")))))
