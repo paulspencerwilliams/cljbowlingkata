@@ -1,12 +1,9 @@
 (ns bowlingkata.core)
 
-(defn spare? [roll] (= \/ roll))
-(defn strike? [roll] (= \X roll))
-
 (defn turn-type [head next]
   (cond
-    (strike? head) :strike
-    (spare? next) :spare
+    (= \X head) :strike
+    (= \/ next) :spare
     :else :normal))
 
 (defn roll-score [roll]
