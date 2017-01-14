@@ -1,26 +1,47 @@
 (ns bowlingkata.core)
 
-(defn spare? [first second] (= 10 (+ first second)))
-(defn strike? [first] (= "X" first))
+(defn spare? [roll] (= \/ roll))
+(defn strike? [roll] (= \X roll))
 
-(defn score-type [first second]
+(defn turn-type [head next]
   (cond
-    (strike? first) :strike
-    (spare? first second) :spare
+    (strike? head) :strike
+    (spare? next) :spare
     :else :normal))
 
-(defn add-next-if-spare
-  [turn-with-next]
-  (let [[first-roll second-roll next-roll final-roll] turn-with-next]
-    (case (score-type first-roll second-roll)
-      :strike (+ 10 10 10)
-      :spare (+ first-roll second-roll next-roll)
-      :normal (+ first-roll second-roll))))
+(defn turn-score [first second third]
+  (cond
+    (strike? first) (+ first second third)
+    (spare? second) (+ 10 third)
+    :else (+ first second)))
+
+(defn roll-score [roll]
+  (case roll
+    \X 10
+    \- 0
+    (read-string (str roll))))
 
 (defn score
   "Calculate score for a series of rolls"
   [rolls]
-  (reduce
-    +
-    (map add-next-if-spare
-         (take 10 (partition 4 2 [0] rolls)))))
+  (loop [[head next after-next & tail :as all] rolls
+         acc 0
+         turn 0]
+    (if (< turn 10)
+      (if
+        (= (turn-type head next) :strike)
+        (recur
+          (conj tail next after-next)
+          (+ acc (+ 10 (roll-score next) (roll-score after-next)))
+          (inc turn))
+        (recur
+          (conj tail after-next)
+          (+ acc
+             (if (= (turn-type head next) :spare)
+               (+ 10 (roll-score after-next))
+               (+ (roll-score head) (roll-score next))))
+          (inc turn)))
+      acc))
+  )
+
+
